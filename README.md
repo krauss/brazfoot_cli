@@ -11,9 +11,16 @@
 **brazfoot_cli** requires [Python 3.9+](https://www.python.org/downloads/).
 
 ```sh
+# Clone this repository:
 $ git clone https://github.com/krauss/brazfoot_cli.git
+
+# Change directory
 $ cd brazfoot_cli
+
+# Install brazfoot_cli dependencies
 $ pip install -e .
+
+# Run brazfoot_cli application
 $ brazfoot
 ```
 
