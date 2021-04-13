@@ -1,8 +1,5 @@
 README.md
 setup.py
-brazfoot_cli/__init__.py
-brazfoot_cli/game.py
-brazfoot_cli/main.py
 brazfoot_cli.egg-info/PKG-INFO
 brazfoot_cli.egg-info/SOURCES.txt
 brazfoot_cli.egg-info/dependency_links.txt

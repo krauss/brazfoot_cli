@@ -3,10 +3,9 @@ import click
 import os
 from questionary import questionary, Choice
 import xml.etree.ElementTree as ET
-from pymongo import MongoClient, InsertOne
+#from pymongo import MongoClient, InsertOne
 from bs4 import BeautifulSoup
 from game import BFGame
-from threading import Event
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from requests_futures.sessions import FuturesSession
 

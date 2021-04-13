@@ -9,11 +9,14 @@ setup(
     packages=find_packages(),
     install_requires=[
         "click",
-        "questionary"
+        "questionary",
+        "beautifulsoup4",
+        "lxml",
+        "requests_futures"
     ],
     entry_points={
-        'console_scripts': ['brazfoot_cli=brazfoot_cli.main:main']
+        'console_scripts': ['brazfoot_cli=main:main']
     },
-    author="Jose R. Krauss",
+    author="Krauss",
     license="MIT"
 )
