@@ -1,0 +1,19 @@
+""" Brazillian Football CLI setup.py
+"""
+from setuptools import setup, find_packages
+
+setup(
+    name="brazfoot_cli",
+    version="0.1.0",
+    description="Brazillian football web scrapper command-line interface (CLI)",
+    packages=find_packages(),
+    install_requires=[
+        "click",
+        "questionary"
+    ],
+    entry_points={
+        'console_scripts': ['brazfoot_cli=brazfoot_cli.main:main']
+    },
+    author="Jose R. Krauss",
+    license="MIT"
+)
