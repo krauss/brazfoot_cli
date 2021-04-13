@@ -1,7 +1,7 @@
 import json
 import xml.etree.ElementTree as ET
 from datetime import datetime
-from bs4 import BeautifulSoup, Tag
+from bs4 import Tag
 
 #-----------------Helper functions --------------------------------------
 def parse_datetime(date=None, time=None, mode='str'):

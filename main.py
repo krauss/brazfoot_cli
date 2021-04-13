@@ -14,7 +14,7 @@ def producer(gameq, competition, division, season, file_format):
 
     print(f'Fetching game data for competition {competition}...')
     with FuturesSession(executor=ThreadPoolExecutor(max_workers=10)) as session:
-        futures = [session.get(f'https://www.cbf.com.br/futebol-brasileiro/competicoes/campeonato-brasileiro-serie-{division}/{season}/{game}') for game in range(1, 11)]
+        futures = [session.get(f'https://www.cbf.com.br/futebol-brasileiro/competicoes/campeonato-brasileiro-serie-{division}/{season}/{game}') for game in range(1, 381)]
 
         for req in as_completed(futures):
             game_soup = BeautifulSoup(bytes(req.result().content), features="lxml")

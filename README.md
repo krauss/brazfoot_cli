@@ -1,15 +1,18 @@
-# :soccer: Brazillian Football Web Scrapper CLI :brazil:
+# brazfoot_cli
 
-## Requirements
+## _Brazillian Football Web Scrapper CLI_ :brazil: :soccer:
 
-1. [Click](https://click.palletsprojects.com/en/7.x/)
-2. [Questionaries](https://pypi.org/project/questionary/)
-3. [BeautifulSoup](https://pypi.org/project/beautifulsoup4/)
-4. [lxml](https://lxml.de/)
+### Description
 
-## Setup
+**brazfoot_cli** is a CLI application written in Python that extracts information about brazillian football competitions and save them as structured file format such as `json`, `xml` and `csv`.
 
-- Download this repository: `$ git clone`
-- Change directory: `$ cd brazfoot_cli` 
-- Install dependencies: `$ pip install -e .`
-- Run the CLI: `$ brazfoot`
+### Setup
+
+**brazfoot_cli** requires [Python 3.9+](https://www.python.org/downloads/).
+
+```sh
+$ git clone https://github.com/krauss/brazfoot_cli.git
+$ cd brazfoot_cli
+$ pip install -e .
+$ brazfoot
+```
