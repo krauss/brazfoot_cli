@@ -1,8 +1,0 @@
-README.md
-setup.py
-brazfoot_cli.egg-info/PKG-INFO
-brazfoot_cli.egg-info/SOURCES.txt
-brazfoot_cli.egg-info/dependency_links.txt
-brazfoot_cli.egg-info/entry_points.txt
-brazfoot_cli.egg-info/requires.txt
-brazfoot_cli.egg-info/top_level.txt
