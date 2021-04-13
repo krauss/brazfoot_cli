@@ -16,3 +16,5 @@ $ cd brazfoot_cli
 $ pip install -e .
 $ brazfoot
 ```
+
+_P.S: After choosing the file format, the application will dump all the files (one per game match) into the **games** folder_
