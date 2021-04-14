@@ -3,7 +3,7 @@ import xml.etree.ElementTree as ET
 from datetime import datetime
 from bs4 import Tag
 
-#-----------------Helper functions --------------------------------------
+#----------------- Helper functions --------------------------------------
 def parse_datetime(date=None, time=None, mode='str'):
     month = {
         'Janeiro': '01',
@@ -23,7 +23,7 @@ def parse_datetime(date=None, time=None, mode='str'):
     return datetime.fromisoformat(date + ' ' + time.strip()) if mode == 'date' else date + ' ' + time.strip()
 
 
-#------------ Game Class ---------------------------
+#----------------- BFGame Class ---------------------------
 class BFGame:
 
     def __init__(self, soup, date_mode):
@@ -122,13 +122,11 @@ class BFGame:
         result = {}
         game_canceled = soup.find(class_='cancelado')
         game_score =  soup.find(class_='placar-wrapper')
-
         #--------- Home team info
         game_home_team = game_score.find(class_='time-left')
         game_home_team_name = game_home_team.find(class_='time-nome').text
         if not game_canceled:
-            game_home_team_goals = game_home_team.find(class_='time-gols').text        
-
+            game_home_team_goals = game_home_team.find(class_='time-gols').text      
         #--------- Away team info
         game_away_team = game_score.find(class_='time-right')
         game_away_team_name = game_away_team.find(class_='time-nome').text
@@ -181,7 +179,7 @@ class BFGame:
 
     #-------------------------------------------------------------------------
     def get_game_dict(self):
-        '''Return this Game object as a dictionary'''
+        '''Return this Game object as a dictionary. Suitable to use with document-based No-SQL databases like MongoDB'''
         return self.competition_header | self.game_header | self.game_score | self.game_referees
 
     #-------------------------------------------------------------------------
@@ -242,7 +240,6 @@ class BFGame:
                         else:
                             attributes['goals'] = obs
                 
-
                 pl.attrib = attributes
                 pl.text = vals[1] # Player name
         else:
@@ -282,7 +279,6 @@ class BFGame:
                         else:
                             attributes['goals'] = obs
                 
-
                 pl.attrib = attributes
                 pl.text = vals[1] # Player name
         else:
@@ -302,11 +298,25 @@ class BFGame:
     
     #-------------------------------------------------------------------------
     def get_game_csv(self):
-        '''Return this Game object as a CSV'''
-        pass
+        '''Return a tuple containing the header and game object as a CSV'''
+        header = ["competition", "division", "edition", "game_number", 
+                "stadium", "city", "state", "channel", "date_time", 
+                "winner", "home_name", "home_goals", "away_name", 
+                "away_goals"]
+        
+        game = {**self.competition_header}
+        game |= self.game_header['local']
+        game['date_time'] = self.game_header['date_time']
+        game['winner'] = self.game_score['winner']
+        game['home_name'] = self.game_score['home']['name']
+        game['home_goals'] = self.game_score['home']['goals']
+        game['away_name'] = self.game_score['away']['name']
+        game['away_goals'] = self.game_score['away']['goals']
+
+        return [hdr.upper() for hdr in header], game.values()
     
     #-------------------------------------------------------------------------
-    def __str_(self):
+    def __str__(self):
         return f"game_{self.competition_header['game_number']}"
 
     #-------------------------------------------------------------------------
