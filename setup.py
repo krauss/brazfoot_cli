@@ -15,7 +15,7 @@ setup(
         "requests_futures"
     ],
     entry_points={
-        'console_scripts': ['brazfoot_cli=main:main']
+        'console_scripts': ['brazfoot_cli=src.main:main']
     },
     author="Krauss",
     license="MIT"
