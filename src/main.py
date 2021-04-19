@@ -14,12 +14,12 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from requests_futures.sessions import FuturesSession
 
 #---------------------------------- Web Scrapping function
-def scrapper(gameq, competition, division, season, file_format, sample=False):    
+def scrapper(gameq, competition, division, season, is_all_games, file_format):    
     start_time = time.time()
 
     print(f'Fetching game data for competition {competition}...')
     with FuturesSession(executor=ThreadPoolExecutor(max_workers=10)) as session:
-        futures = [session.get(f'https://www.cbf.com.br/futebol-brasileiro/competicoes/campeonato-brasileiro-serie-{division}/{season}/{game}') for game in range(1, 11 if sample else 381)]
+        futures = [session.get(f'https://www.cbf.com.br/futebol-brasileiro/competicoes/campeonato-brasileiro-serie-{division}/{season}/{game}') for game in range(1, 381 if is_all_games else 11)]
 
         for req in as_completed(futures):
             game_soup = BeautifulSoup(bytes(req.result().content), features="lxml")
@@ -30,7 +30,7 @@ def scrapper(gameq, competition, division, season, file_format, sample=False):
     print(f'Finished in {stop_time-start_time}')
 
 #---------------------------------- Game processing function
-def dumper(gameq, competition, division, season, file_format):
+def dumper(gameq, competition, division, season, is_all_games, file_format):
     start_time = time.time()
     #client = MongoClient(host='localhost', port=27017)
 
@@ -40,27 +40,33 @@ def dumper(gameq, competition, division, season, file_format):
 
     if file_format == 'json':        
         for game in gameq:
-            
-            with open(os.path.join(os.getcwd(), 'games', f'{game}.json'), 'w', encoding='utf-8') as json_file:
-                json_file.write(game.get_game_json())
-            
+            try:
+                with open(os.path.join(os.getcwd(), 'games', f'{game}.json'), 'w', encoding='utf-8') as json_file:
+                    json_file.write(game.get_game_json())
+            except OSError as err:
+                print(f'Error: permission error {os.strerror(err.errno)}, stack_trace: {err.with_traceback()}')
+
             print(f"File ./games/{game}.json saved!")
     
     elif file_format == 'xml':
         for game in gameq:
-        
-            game.get_game_xml().write(os.path.join(os.getcwd(), 'games', f'{game}.xml'), encoding='utf-8', method='xml', xml_declaration=True)
-            
+            try:
+                game.get_game_xml().write(os.path.join(os.getcwd(), 'games', f'{game}.xml'), encoding='utf-8', method='xml', xml_declaration=True)
+            except OSError as err:
+                print(f'Error: permission error {os.strerror(err.errno)}, stack_trace: {err.with_traceback()}')
+                
             print(f"File ./games/{game}.xml saved!")
     
     else:            
         with open(os.path.join(os.getcwd(), 'games', f'{competition}-{division}-{season}.csv'), 'w', encoding='utf-8', newline='') as csv_file:
-            writer = csv.writer(csv_file, delimiter=';')                
-            for index, game in enumerate(gameq):
-                if index == 0:
-                    writer.writerow(game.get_game_csv()[0])
-                writer.writerow(game.get_game_csv()[1])
-            
+            try:
+                writer = csv.writer(csv_file, delimiter=';')                
+                for index, game in enumerate(gameq):
+                    if index == 0:
+                        writer.writerow(game.get_game_csv()[0])
+                    writer.writerow(game.get_game_csv()[1])
+            except PermissionError as err:
+                print(f'Error: permission error {os.strerror(err.errno)}, stack_trace: {err.with_traceback()}')
         
         print(f"File ./games/{competition}-{division}-{season}.csv saved!")
 
@@ -97,15 +103,16 @@ def main(division=None, season=None, file_format=None, sample=False):
             competition = questionary.select("Select a competition", choices=lst_competition),
             division = questionary.select("Select a division", choices=lst_divison),
             season = questionary.select("Select a season", choices=lst_season),
+            is_all_games = questionary.confirm("Do you want to extract all the games"),
             file_format = questionary.select("Select a file format", choices=lst_file_format)
         ).ask()
 
-        scrapper(bfgame_queue, **answer, sample=sample)
+        scrapper(bfgame_queue, **answer)
         dumper(bfgame_queue, **answer)
     
     else:
-        scrapper(bfgame_queue, 'campeonato-brasileiro', str(division).lower(), season, file_format, sample=sample)
-        dumper(bfgame_queue, 'campeonato-brasileiro', str(division).lower(), season, file_format)
+        scrapper(bfgame_queue, 'campeonato-brasileiro', str(division).lower(), season, sample, file_format)
+        dumper(bfgame_queue, 'campeonato-brasileiro', str(division).lower(), season, sample, file_format)
 
 #---------------------------------- Entry point
 if __name__ == '__main__':

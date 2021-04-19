@@ -38,36 +38,42 @@ class BFGame:
     def extract_competition_header(self, soup):
         '''Method gets a soup as argument and returns a dict with competitio name and game number'''
         result = {}
-        competition_header = soup.find(class_='section-placar-header')
-        competition_name = str(competition_header.find('h3').text).strip()
-        competition_game_number = str(competition_header.findAll('span')[-1].text).strip()
-        competition_game_number = str(competition_game_number).split(':')[-1]
 
-        result['competition'], result['division'], result['season'] = tuple(competition_name.split(' - '))
-        result['game'] = int(competition_game_number)
+        competition_header = soup.find(class_='section-placar-header')
+
+        if competition_header:
+            competition_name = str(competition_header.find('h3').text).strip()
+            competition_game_number = str(competition_header.findAll('span')[-1].text).strip()
+            competition_game_number = str(competition_game_number).split(':')[-1]
+
+            result['competition'], result['division'], result['season'] = tuple(competition_name.split(' - '))
+            result['game'] = int(competition_game_number)
 
         return result
 
     #-------------------------------------------------------------------------
     def extract_game_header(self, soup, date_mode):
         '''Method gets a soup as argument and returns a dict with game date and place'''
-        result = {}        
+        result = {}    
+
         game_header = soup.find(class_='section-content-header')
-        game_header_local = str(game_header.findAll('span')[0].text).split(' - ')
-        game_header_stadium = str(game_header_local[0]).strip()
-        game_header_city = str(game_header_local[1]).strip()
-        game_header_state = str(game_header_local[2]).strip()
-        game_header_date = game_header.findAll('span')[1].text
-        game_header_time = game_header.findAll('span')[2].text
-        try:
-            game_header_channel = game_header.findAll('span')[3].text
-        except:
-            game_header_channel = None
-        result['local'] = {'stadium': game_header_stadium, 
+
+        if game_header:
+            game_header_local = str(game_header.findAll('span')[0].text).split(' - ')
+            game_header_stadium = str(game_header_local[0]).strip()
+            game_header_city = str(game_header_local[1]).strip()
+            game_header_state = str(game_header_local[2]).strip()
+            game_header_date = game_header.findAll('span')[1].text
+            game_header_time = game_header.findAll('span')[2].text
+            try:
+                game_header_channel = game_header.findAll('span')[3].text
+            except:
+                game_header_channel = None
+            result['local'] = {'stadium': game_header_stadium, 
                             'city': game_header_city, 
                             'state': game_header_state, 
                             'channel': game_header_channel}
-        result['datetime'] = parse_datetime(game_header_date, game_header_time, mode=date_mode)
+            result['datetime'] = parse_datetime(game_header_date, game_header_time, mode=date_mode)
 
         return result
 
@@ -75,10 +81,10 @@ class BFGame:
     def extract_lineup(self, soup):
         lineup = {}
 
-        try:
-            game_players = soup.find(id='escalacao').findAll('ul')            
+        game_players = soup.find(id='escalacao')
 
-            for index, list_item in enumerate(game_players, start=1): 
+        if game_players:
+            for index, list_item in enumerate(game_players.findAll('ul'), start=1): 
                 player_list = []
 
                 for i in list_item.children:
@@ -113,10 +119,7 @@ class BFGame:
 
                 lineup[f'{index}'] = player_list
             
-            return lineup
-
-        except:
-            return lineup
+        return lineup
 
     #-------------------------------------------------------------------------
     def extract_game_info(self, soup, lineup):
@@ -172,9 +175,10 @@ class BFGame:
         '''Extract and returns a list of Referees'''
         referees = []
         game_referees = soup.find(id='arbitros').find(class_='table').find('tbody').findAll('tr')
-        
-        for row in game_referees:            
-            referees.append(','.join([str(x.text).strip() for x in row.children if type(x) == Tag]))
+
+        if game_referees:
+            for row in game_referees:            
+                referees.append(','.join([str(x.text).strip() for x in row.children if type(x) == Tag]))
 
         return {'referees': referees}
 
