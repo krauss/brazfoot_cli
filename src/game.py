@@ -1,5 +1,4 @@
 import json
-import pickle
 import xml.etree.ElementTree as ET
 from .utils import parse_datetime
 from bs4 import Tag
@@ -47,7 +46,6 @@ class GameCampeonatoBrasileiro:
                 game_header_city = str(game_header_local[1]).strip()
                 game_header_state = str(game_header_local[2]).strip()
             except IndexError:
-                print('Warning: game has no city/state info')
                 game_header_city = game_header_state = None
 
             game_header_date = game_header.findAll('span')[1].text
@@ -55,7 +53,6 @@ class GameCampeonatoBrasileiro:
             try:
                 game_header_channel = game_header.findAll('span')[3].text
             except IndexError:
-                print('Warning: game has no channel info')
                 game_header_channel = None
 
             result['local'] = {'stadium': game_header_stadium, 
@@ -184,13 +181,6 @@ class GameCampeonatoBrasileiro:
         return json.dumps(game, ensure_ascii=False, indent=4)
 
     #-------------------------------------------------------------------------
-    def get_game_pickle(self):
-        '''Return this Game object as pickle bytes'''
-        game = self.get_game_dict()
-
-        return pickle.dumps(game)
-
-    #-------------------------------------------------------------------------
     def get_game_xml(self):
         '''Return this Game object as a XML'''
         game = ET.Element('game')
@@ -222,9 +212,9 @@ class GameCampeonatoBrasileiro:
         hname.text = self.game_score['home']['name']
         hgoals = ET.SubElement(home, 'goals')
         hgoals.text = str(self.game_score['home'].get('goals', ''))
-        hlineup = ET.SubElement(home, 'lineup')
 
-        if self.game_score['home']['lineup']:
+        hlineup = ET.SubElement(home, 'lineup')
+        if self.game_score['home'].get('lineup'):
             for player in self.game_score['home']['lineup']:
                 pl = ET.SubElement(hlineup, 'player')
                 vals = player.split(',')
@@ -246,7 +236,7 @@ class GameCampeonatoBrasileiro:
             hlineup.text = ""
 
         hsubs = ET.SubElement(home, 'substitutes')
-        if self.game_score['home']['substitutes']:
+        if self.game_score['home'].get('substitutes'):
             for player in self.game_score['home']['substitutes']:
                 pl = ET.SubElement(hsubs, 'player')
                 vals = player.split(',')
@@ -254,16 +244,15 @@ class GameCampeonatoBrasileiro:
                 pl.text = vals[1]
         else:
             hsubs.text = ""
-
         #------------ AWAY -------------------------------------
         away = ET.SubElement(game, 'away')
         aname = ET.SubElement(away, 'name')
         aname.text = self.game_score['away']['name']
         agoals = ET.SubElement(away, 'goals')
         agoals.text = str(self.game_score['away'].get('goals', ''))
+        
         alineup = ET.SubElement(away, 'lineup')
-
-        if self.game_score['away']['lineup']:
+        if self.game_score['away'].get('lineup'):
             for player in self.game_score['away']['lineup']:
                 pl = ET.SubElement(alineup, 'player')
                 vals = player.split(',')
@@ -285,14 +274,27 @@ class GameCampeonatoBrasileiro:
             hlineup.text = ""
 
         asubs = ET.SubElement(away, 'substitutes')
-        if self.game_score['away']['substitutes']:
+        if self.game_score['away'].get('substitutes'):
             for player in self.game_score['away']['substitutes']:
                 pl = ET.SubElement(asubs, 'player')
                 vals = player.split(',')
                 pl.attrib = {'number': vals[0]}
                 pl.text = vals[1]
         else:
-            asubs.text = ""
+            asubs.text = ""        
+        #------------ REFEREES -------------------------------------
+        referees = ET.SubElement(game, 'referees')
+        if self.game_referees['referees']:
+            for line in self.game_referees['referees']:
+                ref = ET.SubElement(referees, 'referee')
+                vals = line.split(',')
+                attributes = {}
+                attributes['role'] = vals[0]
+                attributes['category'] = vals[2]
+                attributes['federation'] = vals[3]
+                ref.attrib = attributes
+                ref.text = vals[1]
+
 
         return ET.ElementTree(game)
     
@@ -369,7 +371,6 @@ class GameCopaDoBrasil:
                 game_header_city = str(game_header_local[1]).strip()
                 game_header_state = str(game_header_local[2]).strip()
             except IndexError:
-                print('Warning: game has no city/state info')
                 game_header_city = game_header_state = ''
 
             game_header_date = game_header.findAll('span')[1].text
@@ -377,7 +378,6 @@ class GameCopaDoBrasil:
             try:
                 game_header_channel = game_header.findAll('span')[3].text
             except IndexError:
-                print('Warning: game has no channel info')
                 game_header_channel = ''
 
             result['local'] = {'stadium': game_header_stadium, 
@@ -457,7 +457,6 @@ class GameCopaDoBrasil:
                 else:
                     winner = None
             except ValueError:
-                print('Error: could not convert goal to integer. Setting winner to None')
                 winner = None
 
             result['winner'] = winner
@@ -510,13 +509,6 @@ class GameCopaDoBrasil:
         return json.dumps(game, ensure_ascii=False, indent=4)
 
     #-------------------------------------------------------------------------
-    def get_game_pickle(self):
-        '''Return this Game object as pickle bytes'''
-        game = self.get_game_dict()
-
-        return pickle.dumps(game)
-
-    #-------------------------------------------------------------------------
     def get_game_xml(self):
         '''Return this Game object as a XML'''
         game = ET.Element('game')
@@ -553,7 +545,7 @@ class GameCopaDoBrasil:
         hgoals.text = str(self.game_score['home'].get('goals', ''))
         hlineup = ET.SubElement(home, 'lineup')
 
-        if self.game_score['home']['lineup']:
+        if self.game_score['home'].get('lineup'):
             for player in self.game_score['home']['lineup']:
                 pl = ET.SubElement(hlineup, 'player')
                 vals = player.split(',')
@@ -575,7 +567,7 @@ class GameCopaDoBrasil:
             hlineup.text = ""
 
         hsubs = ET.SubElement(home, 'substitutes')
-        if self.game_score['home']['substitutes']:
+        if self.game_score['home'].get('substitutes'):
             for player in self.game_score['home']['substitutes']:
                 pl = ET.SubElement(hsubs, 'player')
                 vals = player.split(',')
@@ -592,7 +584,7 @@ class GameCopaDoBrasil:
         agoals.text = str(self.game_score['away'].get('goals', ''))
         alineup = ET.SubElement(away, 'lineup')
 
-        if self.game_score['away']['lineup']:
+        if self.game_score['away'].get('lineup'):
             for player in self.game_score['away']['lineup']:
                 pl = ET.SubElement(alineup, 'player')
                 vals = player.split(',')
@@ -614,7 +606,7 @@ class GameCopaDoBrasil:
             hlineup.text = ""
 
         asubs = ET.SubElement(away, 'substitutes')
-        if self.game_score['away']['substitutes']:
+        if self.game_score['away'].get('substitutes'):
             for player in self.game_score['away']['substitutes']:
                 pl = ET.SubElement(asubs, 'player')
                 vals = player.split(',')
@@ -622,6 +614,19 @@ class GameCopaDoBrasil:
                 pl.text = vals[1]
         else:
             asubs.text = ""
+        #------------ REFEREES -------------------------------------
+        referees = ET.SubElement(game, 'referees')
+        if self.game_referees['referees']:
+            for line in self.game_referees['referees']:
+                ref = ET.SubElement(referees, 'referee')
+                vals = line.split(',')
+                attributes = {}
+                attributes['role'] = vals[0]
+                attributes['category'] = vals[2]
+                attributes['federation'] = vals[3]
+                ref.attrib = attributes
+                ref.text = vals[1]
+
 
         return ET.ElementTree(game)
     
