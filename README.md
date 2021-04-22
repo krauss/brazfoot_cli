@@ -25,4 +25,6 @@ $ brazfoot_cli
 $ brazfoot_cli --help  # to check the available command options 
 ```
 
-_P.S: After choosing the file format, the application will dump all the files (one per game match) into the **games** folder_
+### Samples
+
+In the directory [export](export/) you will find example files, so you can have an idea what they look like when exported.

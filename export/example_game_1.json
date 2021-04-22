@@ -1,0 +1,82 @@
+{
+    "competition": "Campeonato Brasileiro de Futebol",
+    "division": "Série A",
+    "season": "2017",
+    "game": 1,
+    "local": {
+        "stadium": "Maracanã",
+        "city": "Rio de Janeiro",
+        "state": "RJ",
+        "channel": " Premiere"
+    },
+    "datetime": "2017-05-14 11:00",
+    "winner": "Fluminense - RJ",
+    "home": {
+        "name": "Fluminense - RJ",
+        "goals": 3,
+        "lineup": [
+            "12,Diego Cavalieri",
+            "33,Henrique",
+            "2,Lucas",
+            "4,Renato Chaves",
+            "9,Henrique Dourado,3' (1ºT),45+3' (1ºT)",
+            "11,Wellington Silva,out",
+            "35,Marcos Jr,in",
+            "15,Léo,yellow card",
+            "37,Wendel",
+            "70,Richarlison,out",
+            "5,Pierre,in",
+            "18,Orejuela",
+            "20,Sornoza,12' (2ºT),out",
+            "10,Gustavo Scarpa,in"
+        ],
+        "substitutes": [
+            "8,Douglas",
+            "44,Nogueira",
+            "32,Pedro",
+            "25,Maranhão",
+            "16,Renato",
+            "22,Julio Cesar"
+        ]
+    },
+    "away": {
+        "name": "Santos - SP",
+        "goals": 2,
+        "lineup": [
+            "1,Vanderlei",
+            "4,Victor Ferraz,38' (1ºT),yellow card",
+            "8,Renato",
+            "9,Ricardo Oliveira,yellow card,out",
+            "11,Kayke,in",
+            "25,Yuri",
+            "7,Vitor Bueno,out",
+            "16,Vladimir Hernandez,42' (2ºT),in",
+            "39,Sousa,out",
+            "19,Cittadini,in",
+            "10,Lucas Lima,yellow card",
+            "28,Lucas Verissimo,yellow card",
+            "29,Thiago Maia",
+            "27,Bruno Henrique,yellow card"
+        ],
+        "substitutes": [
+            "32,Noguera",
+            "23,Arthur",
+            "22,Rodrigao",
+            "13,Matheus",
+            "38,Daniel Guedes",
+            "30,Leandro Donizete",
+            "26,Thiago Ribeiro",
+            "12,Vladimir",
+            "17,Rafael Longuine"
+        ]
+    },
+    "referees": [
+        "Árbitro,Wagner Reway,FIFA,MT",
+        "Árbitro Assistente 1,Fabio Rodrigo Rubinho,AB,MT",
+        "Árbitro Assistente 2,Marcelo Grando,AB,MT",
+        "Quarto Árbitro,Renan Antonio Angelim Rodrigues,AB,MT",
+        "Árbitro Assistente Adicional 1,Alinor Silva da Paixao,AB,MT",
+        "Árbitro Assistente Adicional 2,Rafael Odilio Ramos dos Santos,CD,MT",
+        "Analista de Campo,Cláudio Vinícius Cerdeira,CBF,BRA"
+    ]
+}
