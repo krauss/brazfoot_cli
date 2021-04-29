@@ -3,7 +3,7 @@ import click
 import os
 import csv
 from questionary import questionary, Choice
-from .game import GameCampeonatoBrasileiro, GameCopaDoBrasil
+from game import GameCampeonatoBrasileiro, GameCopaDoBrasil
 from bs4 import BeautifulSoup
 from concurrent.futures import as_completed
 from requests_futures.sessions import FuturesSession

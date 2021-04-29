@@ -1,0 +1,6 @@
+# These are the required libraries for the application.
+click
+questionary
+beautifulsoup4
+lxml
+requests_futures
