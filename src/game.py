@@ -290,10 +290,12 @@ class GameCampeonatoBrasileiro:
                 vals = line.split(',')
                 attributes = {}
                 attributes['role'] = vals[0]
-                attributes['category'] = vals[2]
-                attributes['federation'] = vals[3]
+                if len(vals) > 2:
+                    ref.text = vals[1]
+                    attributes['category'] = vals[2]
+                    attributes['federation'] = vals[3]
                 ref.attrib = attributes
-                ref.text = vals[1]
+                
 
 
         return ET.ElementTree(game)
@@ -622,10 +624,12 @@ class GameCopaDoBrasil:
                 vals = line.split(',')
                 attributes = {}
                 attributes['role'] = vals[0]
-                attributes['category'] = vals[2]
-                attributes['federation'] = vals[3]
+                if len(vals) > 2:
+                    ref.text = vals[1]
+                    attributes['category'] = vals[2]
+                    attributes['federation'] = vals[3]
                 ref.attrib = attributes
-                ref.text = vals[1]
+                
 
 
         return ET.ElementTree(game)
