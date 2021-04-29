@@ -18,13 +18,13 @@ $ git clone https://github.com/krauss/brazfoot_cli.git
 $ cd brazfoot_cli
 
 # Create a virtual environment
-$> python -m venv ./venv
+$ python -m venv ./venv
 
 # Activate the virtual environment
-$> ./venv/bin/activate
+$ ./venv/bin/activate
 
 # Install brazfoot_cli dependencies
-$> pip install -r requirements.txt
+$ pip install -r requirements.txt
 
 # Run brazfoot_cli application
 $ python src/main.py
