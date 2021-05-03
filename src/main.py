@@ -1,125 +1,7 @@
-import time
 import click
-import os
-import csv
-import zipfile
 from questionary import questionary, Choice
-from game import GameCampeonatoBrasileiro, GameCopaDoBrasil
-from bs4 import BeautifulSoup
-from concurrent.futures import as_completed
-from requests_futures.sessions import FuturesSession
-
-#---------------------------------- Web Scrapping function
-def scrapper(gameq, competition, division, season, is_all_games, file_format):    
-    start_time = time.time()
-
-    print(f'\nFetching game data for competition: {competition} {season}...')
-
-    if competition == 'campeonato-brasileiro':
-        
-        qty = 381 if is_all_games else 6 # How many games will be fetched
-        wrks = 10 if is_all_games else 5 # number of threads 
-
-        with FuturesSession(max_workers=wrks) as session:
-            futures = [session.get(f'https://www.cbf.com.br/futebol-brasileiro/competicoes/campeonato-brasileiro-serie-{division}/{season}/{game}') for game in range(1, qty)]
-
-            for req in as_completed(futures):
-                if req.result().status_code == 200:
-                    game_soup = BeautifulSoup(bytes(req.result().content), features="lxml")
-                    bfgame = GameCampeonatoBrasileiro(game_soup, 'str')
-                    gameq.append(bfgame)
-
-    else:
-
-        qty = 173 if is_all_games else 6 # How many games will be fetched
-        wrks = 10 if is_all_games else 5 # number of threads
-        
-        with FuturesSession(max_workers=wrks) as session:
-            
-            futures = [session.get(f'https://www.cbf.com.br/futebol-brasileiro/competicoes/copa-brasil-masculino/{season}/{game}') for game in range(1, qty)]
-
-            for req in as_completed(futures):
-                if req.result().status_code == 200:
-                    game_soup = BeautifulSoup(bytes(req.result().content), features="lxml")
-                    bfgame = GameCopaDoBrasil(game_soup, 'str')
-                    gameq.append(bfgame)
-
-    stop_time = time.time()
-    print(f'Fetching finished in {stop_time-start_time:.3} sec')
-
-#---------------------------------- Game processing function
-def dumper(gameq, competition, division, season, is_all_games, file_format):
-    start_time = time.time()
-
-    if file_format == 'json': 
-        with zipfile.ZipFile(
-                            os.path.join(os.getcwd(), 'export', 'games.zip'), 
-                            "w", 
-                            compression=zipfile.ZIP_BZIP2, 
-                            compresslevel=9) as zip_file:
-            for game in gameq:
-                try:
-                    # Write the json file
-                    with open(
-                            os.path.join(os.getcwd(), 'export', f'{game}.json'), 
-                            'w', 
-                            encoding='utf-8') as json_file:
-                        json_file.write(game.get_game_json())
-                    
-                    # Add it to the zil file
-                    zip_file.write(os.path.join(os.getcwd(), 'export', f'{game}.json'), arcname=f'{game}.json')
-
-                    # Remove the previous json file
-                    os.remove(os.path.join(os.getcwd(), 'export', f'{game}.json'))
-
-                except OSError as err:
-                    print(f'Error: permission error {os.strerror(err.errno)}, stack_trace: {err.with_traceback()}')
-    
-    elif file_format == 'xml':
-        with zipfile.ZipFile(
-                            os.path.join(os.getcwd(), 'export', 'games.zip'), 
-                            "w", 
-                            compression=zipfile.ZIP_BZIP2, 
-                            compresslevel=9) as zip_file:
-            for game in gameq:
-                try:
-                    # Write the xml file
-                    game.get_game_xml().write(
-                                            os.path.join(os.getcwd(), 'export', f'{game}.xml'), 
-                                            encoding='utf-8', 
-                                            method='xml', 
-                                            xml_declaration=True)
-                    
-                    # Add it to the xip file 
-                    zip_file.write(
-                                    os.path.join(os.getcwd(), 'export', f'{game}.xml'), 
-                                    arcname=f'{game}.xml')
-
-                    # Remove the previous json file
-                    os.remove(os.path.join(os.getcwd(), 'export', f'{game}.xml'))
-
-                except OSError as err:
-                    print(f'Error: permission error {os.strerror(err.errno)}, stack_trace: {err.with_traceback()}')                
-    
-    else:            
-        with open(
-                os.path.join(os.getcwd(), 'export', f'{competition}-{division}-{season}.csv'), 
-                'w', 
-                encoding='utf-8', 
-                newline='') as csv_file:
-            try:
-                writer = csv.writer(csv_file, delimiter=';')                              
-                for index, game in enumerate(gameq):
-                    if index == 0:
-                        writer.writerow(game.get_game_csv()[0])
-                    writer.writerow(game.get_game_csv()[1])
-            except PermissionError as err:
-                print(f'Error: permission error {os.strerror(err.errno)}, stack_trace: {err.with_traceback()}')        
-
-    stop_time = time.time()
-    print(f'Games downloaded: {len(gameq)}')
-    print(f'Export finished in {stop_time-start_time:.3} sec')
-    print('Check out the .export/ directory.')
+from scrapper import scrapper
+from exporter import exporter
 
 #---------------------------------- 
 bfgame_queue = []
@@ -154,11 +36,11 @@ def main(competition=None, division=None, season=None, file_format=None, sample=
         file_format = questionary.select("Select a file format", choices=lst_file_format).ask()
 
         scrapper(bfgame_queue, competition, division, season, is_all_games, file_format)
-        dumper(bfgame_queue, competition, division, season, is_all_games, file_format)
+        exporter(bfgame_queue, competition, division, season, is_all_games, file_format)
     
     else:
         scrapper(bfgame_queue, competition, str(division).lower(), season, sample, file_format)
-        dumper(bfgame_queue, competition, str(division).lower(), season, sample, file_format)
+        exporter(bfgame_queue, competition, str(division).lower(), season, sample, file_format)
 
 #---------------------------------- Entry point
 if __name__ == '__main__':
