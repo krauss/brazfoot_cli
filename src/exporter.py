@@ -9,7 +9,7 @@ def exporter(gameq, competition, division, season, is_all_games, file_format):
 
     if file_format == 'json': 
         with zipfile.ZipFile(
-                            os.path.join(os.getcwd(), 'export', 'games.zip'), 
+                            os.path.join(os.getcwd(), 'export', f'{competition}-{division}-{season}.zip'), 
                             "w", 
                             compression=zipfile.ZIP_BZIP2, 
                             compresslevel=9) as zip_file:
@@ -33,7 +33,7 @@ def exporter(gameq, competition, division, season, is_all_games, file_format):
     
     elif file_format == 'xml':
         with zipfile.ZipFile(
-                            os.path.join(os.getcwd(), 'export', 'games.zip'), 
+                            os.path.join(os.getcwd(), 'export', f'{competition}-{division}-{season}.zip'), 
                             "w", 
                             compression=zipfile.ZIP_BZIP2, 
                             compresslevel=9) as zip_file:
