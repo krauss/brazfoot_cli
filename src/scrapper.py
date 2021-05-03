@@ -9,7 +9,7 @@ from requests_futures.sessions import FuturesSession
 @timestamp_decorator
 def scrapper(gameq, competition, division, season, is_all_games, file_format):    
 
-    print(f'\nFetching game data for competition: {competition} {season}')
+    print(f'\nFetching data for competition: {competition} {season}')
 
     if competition == 'campeonato-brasileiro':
         

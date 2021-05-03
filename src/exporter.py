@@ -7,9 +7,11 @@ from utils import timestamp_decorator
 @timestamp_decorator
 def exporter(gameq, competition, division, season, is_all_games, file_format):
 
+    file_name = f'{competition}-{season}' if competition == 'copa-do-brasil' else f'{competition}-{division}-{season}'
+
     if file_format == 'json': 
         with zipfile.ZipFile(
-                            os.path.join(os.getcwd(), 'export', f'{competition}-{division}-{season}.zip'), 
+                            os.path.join(os.getcwd(), 'export', f'{file_name}.zip'), 
                             "w", 
                             compression=zipfile.ZIP_BZIP2, 
                             compresslevel=9) as zip_file:
@@ -33,7 +35,7 @@ def exporter(gameq, competition, division, season, is_all_games, file_format):
     
     elif file_format == 'xml':
         with zipfile.ZipFile(
-                            os.path.join(os.getcwd(), 'export', f'{competition}-{division}-{season}.zip'), 
+                            os.path.join(os.getcwd(), 'export', f'{file_name}.zip'), 
                             "w", 
                             compression=zipfile.ZIP_BZIP2, 
                             compresslevel=9) as zip_file:
@@ -59,7 +61,7 @@ def exporter(gameq, competition, division, season, is_all_games, file_format):
     
     else:            
         with open(
-                os.path.join(os.getcwd(), 'export', f'{competition}-{division}-{season}.csv'), 
+                os.path.join(os.getcwd(), 'export', f'{file_name}.csv'), 
                 'w', 
                 encoding='utf-8', 
                 newline='') as csv_file:
