@@ -1,4 +1,3 @@
-import click
 import os
 import csv
 import zipfile
