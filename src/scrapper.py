@@ -1,5 +1,5 @@
 from game import GameCampeonatoBrasileiro, GameCopaDoBrasil
-from utils import timestamp_decorator
+from utils import timestamp_decorator, HEADERS
 from bs4 import BeautifulSoup
 from concurrent.futures import as_completed
 from requests_futures.sessions import FuturesSession
@@ -9,7 +9,7 @@ from requests_futures.sessions import FuturesSession
 @timestamp_decorator
 def scrapper(gameq, competition, division, season, is_all_games, file_format):    
 
-    print(f'\nFetching data for competition: {competition} {season}')
+    print(f'\nFetching data for competition: {competition} {season} \n')
 
     if competition == 'campeonato-brasileiro':
         
@@ -17,9 +17,10 @@ def scrapper(gameq, competition, division, season, is_all_games, file_format):
         wrks = 10 if is_all_games else 5 # number of threads 
 
         with FuturesSession(max_workers=wrks) as session:
-            futures = [session.get(f'https://www.cbf.com.br/futebol-brasileiro/competicoes/campeonato-brasileiro-serie-{division}/{season}/{game}') for game in range(1, qty)]
+            futures = [session.get(f'https://www.cbf.com.br/futebol-brasileiro/competicoes/campeonato-brasileiro-serie-{division}/{season}/{game}', headers=HEADERS) for game in range(1, qty)]
 
-            for req in as_completed(futures):
+            for index, req in enumerate(as_completed(futures)):
+                print(f'Status: {(index / qty):.2%}', end='\r')
                 if req.result().status_code == 200:
                     game_soup = BeautifulSoup(bytes(req.result().content), features="lxml")
                     bfgame = GameCampeonatoBrasileiro(game_soup, 'str')
@@ -32,9 +33,10 @@ def scrapper(gameq, competition, division, season, is_all_games, file_format):
         
         with FuturesSession(max_workers=wrks) as session:
             
-            futures = [session.get(f'https://www.cbf.com.br/futebol-brasileiro/competicoes/copa-brasil-masculino/{season}/{game}') for game in range(1, qty)]
+            futures = [session.get(f'https://www.cbf.com.br/futebol-brasileiro/competicoes/copa-brasil-masculino/{season}/{game}', headers=HEADERS) for game in range(1, qty)]
 
-            for req in as_completed(futures):
+            for index, req in enumerate(as_completed(futures)):
+                print(f'Status: {(index / qty):.2%}', end='\r')
                 if req.result().status_code == 200:
                     game_soup = BeautifulSoup(bytes(req.result().content), features="lxml")
                     bfgame = GameCopaDoBrasil(game_soup, 'str')
