@@ -5,7 +5,7 @@ from utils import timestamp_decorator
 
 #---------------------------------- Game exporter function
 @timestamp_decorator
-def exporter(gameq, competition, division, season, is_all_games, file_format):
+def exporter(gameq, competition, division, season, file_format):
 
     file_name = f'{competition}-{season}' if competition == 'copa-do-brasil' else f'{competition}-{division}-{season}'
 

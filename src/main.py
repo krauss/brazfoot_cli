@@ -1,6 +1,8 @@
 import click
+import asyncio
 from questionary import questionary, Choice
 from scrapper import scrapper
+from async_scrapper import async_scrapper
 from exporter import exporter
 
 #---------------------------------- 
@@ -35,12 +37,14 @@ def main(competition=None, division=None, season=None, file_format=None, sample=
         is_all_games = questionary.confirm("Download all the games?").ask()
         file_format = questionary.select("Select a file format for exporter function", choices=lst_file_format).ask()
 
-        scrapper(bfgame_queue, competition, division, season, is_all_games, file_format)
-        exporter(bfgame_queue, competition, division, season, is_all_games, file_format)
+        scrapper(bfgame_queue, competition, division, season, is_all_games)
+        #loop = asyncio.get_event_loop()
+        #loop.run_until_complete(async_scrapper(bfgame_queue, competition, division, season, is_all_games))
+        exporter(bfgame_queue, competition, division, season, file_format)
     
     else:
-        scrapper(bfgame_queue, competition, str(division).lower(), season, sample, file_format)
-        exporter(bfgame_queue, competition, str(division).lower(), season, sample, file_format)
+        scrapper(bfgame_queue, competition, str(division).lower(), season, sample)
+        exporter(bfgame_queue, competition, str(division).lower(), season, file_format)
 
 #---------------------------------- Entry point
 if __name__ == '__main__':

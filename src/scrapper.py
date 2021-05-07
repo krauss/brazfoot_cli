@@ -7,14 +7,14 @@ from requests_futures.sessions import FuturesSession
 
 #---------------------------------- Web Scrapping function
 @timestamp_decorator
-def scrapper(gameq, competition, division, season, is_all_games, file_format):    
+def scrapper(gameq, competition, division, season, is_all_games):    
 
     print(f'\nFetching data for competition: {competition} {season} \n')
 
     if competition == 'campeonato-brasileiro':
         
         qty = 381 if is_all_games else 6 # How many games will be fetched
-        wrks = 10 if is_all_games else 5 # number of threads 
+        wrks = 20 if is_all_games else 5 # number of threads 
 
         with FuturesSession(max_workers=wrks) as session:
             futures = [session.get(f'https://www.cbf.com.br/futebol-brasileiro/competicoes/campeonato-brasileiro-serie-{division}/{season}/{game}', headers=HEADERS) for game in range(1, qty)]
@@ -29,7 +29,7 @@ def scrapper(gameq, competition, division, season, is_all_games, file_format):
     else:
 
         qty = 173 if is_all_games else 6 # How many games will be fetched
-        wrks = 10 if is_all_games else 5 # number of threads
+        wrks = 15 if is_all_games else 5 # number of threads
         
         with FuturesSession(max_workers=wrks) as session:
             
