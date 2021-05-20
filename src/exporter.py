@@ -1,6 +1,7 @@
 import os
 import csv
 import zipfile
+import logging
 from utils import timestamp_decorator
 
 #---------------------------------- Game exporter function
@@ -32,6 +33,7 @@ def exporter(gameq, competition, division, season, file_format):
 
                 except OSError as err:
                     print(f'Error: permission error {os.strerror(err.errno)}, stack_trace: {err.with_traceback()}')
+                    logging.critical('Error: permission error', err)
     
     elif file_format == 'xml':
         with zipfile.ZipFile(
@@ -58,7 +60,7 @@ def exporter(gameq, competition, division, season, file_format):
 
                 except OSError as err:
                     print(f'Error: permission error {os.strerror(err.errno)}, stack_trace: {err.with_traceback()}')                
-    
+                    logging.critical(f'Error: {os.strerror(err.errno)}, {err}')
     else:            
         with open(
                 os.path.join(os.getcwd(), 'export', f'{file_name}.csv'), 
@@ -72,7 +74,8 @@ def exporter(gameq, competition, division, season, file_format):
                         writer.writerow(game.get_game_csv()[0])
                     writer.writerow(game.get_game_csv()[1])
             except PermissionError as err:
-                print(f'Error: permission error {os.strerror(err.errno)}, stack_trace: {err.with_traceback()}')        
+                print(f'Error: permission error {os.strerror(err.errno)}, stack_trace: {err.with_traceback()}')
+                logging.critical(f'permission error: {os.strerror(err.errno)}, {err}')
 
-    print(f'Games downloaded: {len(gameq)}')
-    print('Check out the .export/ directory.')
+    print(f' Games downloaded: {len(gameq)}')
+    print(' Check out the .export/ directory.')

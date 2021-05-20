@@ -1,4 +1,5 @@
 import json
+import logging
 import xml.etree.ElementTree as ET
 from utils import parse_datetime
 from bs4 import Tag
@@ -17,18 +18,29 @@ class GameCampeonatoBrasileiro:
 
     #-------------------------------------------------------------------------
     def extract_competition_header(self, soup):
-        '''Method gets a soup as argument and returns a dict with competitio name and game number'''
+        '''Method gets a soup as argument and returns a dict with competition name and game number'''
         result = {}
 
         competition_header = soup.find(class_='section-placar-header')
 
         if competition_header:
-            competition_name = str(competition_header.find('h3').text).strip()
-            competition_game_number = str(competition_header.findAll('span')[-1].text).strip()
-            competition_game_number = str(competition_game_number).split(':')[-1]
 
-            result['competition'], result['division'], result['season'] = tuple(competition_name.split(' - '))
-            result['game'] = int(competition_game_number)
+            try:
+                competition_name = str(competition_header.find('h3').text).strip()
+            except Exception as ex:
+                logging.warning('Error: game has no competition name. Setting to None. %s', ex)
+                result['competition'], result['division'], result['season'] = (None, None, None)
+            else:
+                result['competition'], result['division'], result['season'] = tuple(competition_name.split(' - '))
+
+            try:
+                competition_game_number = str(competition_header.findAll('span')[-1].text).strip()
+                competition_game_number = str(competition_game_number).split(':')[-1]
+            except Exception as ex:
+                logging.critical(f'Error: game has no number. Setting to -1. %s', ex)
+                result['game'] = -1
+            else:
+                result['game'] = int(competition_game_number)
 
         return result
 
@@ -39,20 +51,42 @@ class GameCampeonatoBrasileiro:
 
         game_header = soup.find(class_='section-content-header')
 
-        if game_header:
+        if game_header:                       
             game_header_local = str(game_header.findAll('span')[0].text).split(' - ')
-            game_header_stadium = str(game_header_local[0]).strip()
+            try:
+                game_header_stadium = str(game_header_local[0]).strip()
+            except:
+                logging.warning(f'Game {self.competition_header["game"]} has no stadium information. Setting it to None.')
+                game_header_stadium = None                
+            
             try:
                 game_header_city = str(game_header_local[1]).strip()
-                game_header_state = str(game_header_local[2]).strip()
-            except IndexError:
-                game_header_city = game_header_state = None
+            except:
+                logging.warning(f'Game {self.competition_header["game"]} has no city information. Setting it to None.')
+                game_header_city = None
 
-            game_header_date = game_header.findAll('span')[1].text
-            game_header_time = game_header.findAll('span')[2].text
+            try:
+                game_header_state = str(game_header_local[2]).strip()
+            except:
+                logging.warning(f'Game {self.competition_header["game"]} has no state information. Setting it to None.')
+                game_header_state = None
+
+            try:
+                game_header_date = game_header.findAll('span')[1].text
+            except:
+                logging.warning(f'Game {self.competition_header["game"]} has no date information. Setting it to None.')
+                game_header_date = None
+            
+            try:
+                game_header_time = game_header.findAll('span')[2].text
+            except:
+                logging.warning(f'Game {self.competition_header["game"]} has no time information. Setting it to None.')
+                game_header_time = None
+
             try:
                 game_header_channel = game_header.findAll('span')[3].text
-            except IndexError:
+            except:
+                logging.warning(f'Game {self.competition_header["game"]} has no channel information. Setting it to None.')
                 game_header_channel = None
 
             result['local'] = {'stadium': game_header_stadium, 
@@ -69,7 +103,7 @@ class GameCampeonatoBrasileiro:
 
         game_players = soup.find(id='escalacao')
 
-        if game_players:
+        try:
             for index, list_item in enumerate(game_players.findAll('ul'), start=1): 
                 player_list = []
 
@@ -104,6 +138,8 @@ class GameCampeonatoBrasileiro:
                         player_list.append(','.join(info))
 
                 lineup[f'{index}'] = player_list
+        except Exception as ex:
+            logging.critical('Team has no lineup definition. Setting to None. %s', ex)
             
         return lineup
 
@@ -146,6 +182,7 @@ class GameCampeonatoBrasileiro:
             }
 
         else:
+            logging.critical('Game %s has been canceled.', self.competition_header["game"])
             result['winner'] = 'Canceled'
             result['home'] = {
                 'name': game_home_team_name

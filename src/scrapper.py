@@ -1,43 +1,62 @@
+import logging
 from game import GameCampeonatoBrasileiro, GameCopaDoBrasil
-from utils import timestamp_decorator, HEADERS
+from utils import timestamp_decorator, HEADERS, get_copa_do_brasil_games
 from bs4 import BeautifulSoup
 from concurrent.futures import as_completed
 from requests_futures.sessions import FuturesSession
-
 
 #---------------------------------- Web Scrapping function
 @timestamp_decorator
 def scrapper(gameq, competition, division, season, is_all_games):    
 
-    print(f'\nFetching data for competition: {competition} {season} \n')
+    print(f'\n Fetching data\n')
 
     if competition == 'campeonato-brasileiro':
         
-        qty = 381 if is_all_games else 6 # How many games will be fetched
-        wrks = 20 if is_all_games else 5 # number of threads 
+        qty = 380 if is_all_games else 5 # How many games will be fetched
+        wrks = 10 if is_all_games else 5 # number of threads 
 
         with FuturesSession(max_workers=wrks) as session:
-            futures = [session.get(f'https://www.cbf.com.br/futebol-brasileiro/competicoes/campeonato-brasileiro-serie-{division}/{season}/{game}', headers=HEADERS) for game in range(1, qty)]
+            try:
 
-            for index, req in enumerate(as_completed(futures)):
-                print(f'Status: {(index / qty):.2%}', end='\r')
-                if req.result().status_code == 200:
-                    game_soup = BeautifulSoup(bytes(req.result().content), features="lxml")
-                    bfgame = GameCampeonatoBrasileiro(game_soup, 'str')
-                    gameq.append(bfgame)
+                futures = [session.get(f'https://www.cbf.com.br/futebol-brasileiro/competicoes/campeonato-brasileiro-serie-{division}/{season}/{game}', headers=HEADERS) for game in range(1, qty+1)]
+            
+            except ConnectionError as conerr:
+                logging.critical('Connection error: %s', conerr)
+            except TimeoutError as timerr:
+                logging.critical('Timeout error: %s', timerr)
+            except Exception as ex:
+                logging.critical('Error: %s', ex)
+
+            else:
+                for index, req in enumerate(as_completed(futures)):
+                    print(f' Status: {(index / qty):.1%}', end='\r')
+                    if req.result().status_code == 200:
+                        game_soup = BeautifulSoup(bytes(req.result().content), features="lxml")
+                        bfgame = GameCampeonatoBrasileiro(game_soup, 'str')
+                        gameq.append(bfgame)
 
     else:
 
-        qty = 173 if is_all_games else 6 # How many games will be fetched
-        wrks = 15 if is_all_games else 5 # number of threads
+        qty = get_copa_do_brasil_games(season) if is_all_games else 5 # How many games will be fetched
+        wrks = 10 if is_all_games else 5 # number of threads
         
         with FuturesSession(max_workers=wrks) as session:
-            
-            futures = [session.get(f'https://www.cbf.com.br/futebol-brasileiro/competicoes/copa-brasil-masculino/{season}/{game}', headers=HEADERS) for game in range(1, qty)]
+            try:
 
-            for index, req in enumerate(as_completed(futures)):
-                print(f'Status: {(index / qty):.2%}', end='\r')
-                if req.result().status_code == 200:
-                    game_soup = BeautifulSoup(bytes(req.result().content), features="lxml")
-                    bfgame = GameCopaDoBrasil(game_soup, 'str')
-                    gameq.append(bfgame)
+                futures = [session.get(f'https://www.cbf.com.br/futebol-brasileiro/competicoes/copa-brasil-masculino/{season}/{game}', headers=HEADERS) for game in range(1, qty+1)]
+            
+            except ConnectionError as conerr:
+                logging.critical('Connection error: %s', conerr)
+            except TimeoutError as timerr:
+                logging.critical('Timeout error: %s', timerr)
+            except Exception as ex:
+                logging.critical('Error: %s', ex)
+
+            else:
+                for index, req in enumerate(as_completed(futures)):
+                    print(f' Status: {(index / qty):.1%}', end='\r')
+                    if req.result().status_code == 200:
+                        game_soup = BeautifulSoup(bytes(req.result().content), features="lxml")
+                        bfgame = GameCopaDoBrasil(game_soup, 'str')
+                        gameq.append(bfgame)

@@ -1,9 +1,16 @@
 import click
-import asyncio
+import logging
+import os
 from questionary import questionary, Choice
 from scrapper import scrapper
-from async_scrapper import async_scrapper
 from exporter import exporter
+
+#---------------------------------- Logger settings
+def set_logger():
+    FORMAT = '%(name)s:%(levelname)s:%(asctime)s=%(message)s'
+    LOG_FILE = os.path.join(os.getcwd(), 'brazfoot_cli.log')
+    
+    logging.basicConfig(filename=LOG_FILE, level=logging.INFO, format=FORMAT)
 
 #---------------------------------- 
 bfgame_queue = []
@@ -37,15 +44,24 @@ def main(competition=None, division=None, season=None, file_format=None, sample=
         is_all_games = questionary.confirm("Download all the games?").ask()
         file_format = questionary.select("Select a file format for exporter function", choices=lst_file_format).ask()
 
+        logging.info('Start of scrapping.')
+        logging.info('Scrapping set to %s, %s, %s.', competition, division, season)
         scrapper(bfgame_queue, competition, division, season, is_all_games)
-        #loop = asyncio.get_event_loop()
-        #loop.run_until_complete(async_scrapper(bfgame_queue, competition, division, season, is_all_games))
+        logging.info('End of scrapping.')
+        logging.info('Start of exporting.')
         exporter(bfgame_queue, competition, division, season, file_format)
+        logging.info('End of exporting.')
     
     else:
+        logging.info('Start of scrapping.')
+        logging.info('Scrapping set to %s, %s, %s.', competition, division, season)
         scrapper(bfgame_queue, competition, str(division).lower(), season, sample)
+        logging.info('End of scrapping.')
+        logging.info('Start of exporting.')
         exporter(bfgame_queue, competition, str(division).lower(), season, file_format)
+        logging.info('End of exporting.')
 
 #---------------------------------- Entry point
 if __name__ == '__main__':
+    set_logger()
     main()
