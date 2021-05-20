@@ -30,7 +30,7 @@ def timestamp_decorator(func):
         func(*args, **kwargs)        
 
         end = time.time()
-        print(f'Finished in {end-start:.3} secs')
+        print(f' Finished in {end-start:.3} secs')
     return wrapper
 
 LINUX = {
@@ -60,3 +60,17 @@ if platform.system() == 'Linux':
 
 elif platform.system() == 'Windows':
     HEADERS = WINDOWS
+
+# Function to mapping a season to its respective qty of games.
+def get_copa_do_brasil_games(season):
+    return {
+        '2012': 126,
+        '2013': 172,
+        '2014': 172,
+        '2015': 172,
+        '2016': 170,
+        '2017': 120,
+        '2018': 120,
+        '2019': 120,
+        '2020': 120
+    }.get(season)
