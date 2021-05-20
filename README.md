@@ -34,21 +34,15 @@ $ python src/main.py --help  # to check the available command options
 $ deactivate
 ```
 
-### Docker setup :whale:
+### [Docker](https://hub.docker.com/r/jrkrauss/brazfoot_cli) setup :whale:
 
 ```sh
-# Clone this repository:
-$ git clone https://github.com/krauss/brazfoot_cli.git
+# Download the image from Docker Hub
+$ docker pull jrkrauss/brazfoot_cli:latest
 
-# Change directory
-$ cd brazfoot_cli
+# Run the container specifying a volume for the resulting json file 
+$ docker run -it -v $PWD/export:/usr/src/app/export  jrkrauss/brazfoot_cli:latest  # Linux
 
-# Build the Docker container
-$ docker build -t brazfoot_cli .
-
-# Run the container specifying a volume for the json file 
-$ docker run -it -v $PWD/export:/usr/src/app/export  brazfoot_cli  # Linux
-
-$ docker run -it -v %USERPROFILE%\export:/usr/src/app/export  brazfoot_cli  # Windows
+$ docker run -it -v %USERPROFILE%\export:/usr/src/app/export  jrkrauss/brazfoot_cli:latest  # Windows
 
 ```
