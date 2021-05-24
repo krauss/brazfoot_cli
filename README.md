@@ -12,35 +12,35 @@
 
 * Clone this repository:
 ```sh
-$ git clone https://github.com/krauss/brazfoot_cli.git
+git clone https://github.com/krauss/brazfoot_cli.git
 ```
 * Change directory:
 ```sh
-$ cd brazfoot_cli
+cd brazfoot_cli
 ```
 * Create a virtual environment:
 ```sh
-$ python -m venv ./venv
+python -m venv ./venv
 ```
 * Activate the virtual environment:
 ```sh
-$ ./venv/bin/activate
+./venv/bin/activate
 ```
 * Install brazfoot_cli dependencies:
 ```sh
-$ pip install -r requirements.txt
+pip install -r requirements.txt
 ```
 * Run brazfoot_cli application:
 ```sh
-$ python src/main.py
+python src/main.py
 ```
 * to check the available command options:
 ```sh
-$ python src/main.py --help
+python src/main.py --help
 ```
 * To exit the virtual environment:
 ```sh
-$ deactivate
+deactivate
 ```
 
 ### [Docker](https://hub.docker.com/r/jrkrauss/brazfoot_cli) setup :whale:
@@ -49,14 +49,14 @@ To quickly try this out, download our image and run it following the steps below
 
 * Download the image from Docker Hub
 ```sh
-$ docker pull jrkrauss/brazfoot_cli:latest
+docker pull jrkrauss/brazfoot_cli:latest
 ```
 * [LINUX] Run the container specifying a volume for the resulting json file 
 ```sh
-$ docker run -it -v $PWD/export:/usr/src/app/export  jrkrauss/brazfoot_cli:latest
+docker run -it -v $PWD/export:/usr/src/app/export  jrkrauss/brazfoot_cli:latest
 ```
 * [WINDOWS] Run the container specifying a volume for the resulting json file
 ```sh
-$ docker run -it -v %USERPROFILE%\export:/usr/src/app/export  jrkrauss/brazfoot_cli:latest 
+docker run -it -v %USERPROFILE%\export:/usr/src/app/export  jrkrauss/brazfoot_cli:latest 
 
 ```
