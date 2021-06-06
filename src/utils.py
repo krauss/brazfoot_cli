@@ -42,7 +42,7 @@ LINUX = {
     "Sec-Fetch-Mode": "navigate",
     "Sec-Fetch-User": "?1",
     "Sec-Fetch-Dest": "document",
-    "Accept-Encoding": "gzip, deflate",
+    "Accept-Encoding": "gzip, deflate, br",
     "Accept-Language": "en-US,en;q=0.9"
 }
 
@@ -50,7 +50,7 @@ WINDOWS = {
     "Upgrade-Insecure-Requests": "1",
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.85 Safari/537.36 Edg/90.0.818.46",
     "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
-    "Accept-Encoding": "gzip, deflate",
+    "Accept-Encoding": "gzip, deflate, br",
     "Accept-Language": "pt-BR,pt;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6"
 }
 
@@ -62,8 +62,8 @@ elif platform.system() == 'Windows':
     HEADERS = WINDOWS
 
 # Function to mapping a season to its respective qty of games.
-def get_copa_do_brasil_games(season):
-    return {
+def get_copa_do_brasil_games(season, all_games):
+    game_lst = {
         '2012': 126,
         '2013': 172,
         '2014': 172,
@@ -73,4 +73,56 @@ def get_copa_do_brasil_games(season):
         '2018': 120,
         '2019': 120,
         '2020': 120
-    }.get(season)
+    }
+    return range(1, game_lst[season]+1) if all_games else range(1, 6)
+
+# Function to mapping a season to its respective qty of games.
+def get_campeonato_brasileiro_games(division, season, all_games):
+    game_lst = {
+        'a': {
+            '2012': 380,
+            '2013': 380,
+            '2014': 380,
+            '2015': 380,
+            '2016': 380,
+            '2017': 380,
+            '2018': 380,
+            '2019': 380,
+            '2020': 380
+        },
+        'b': {
+            '2012': 380,
+            '2013': 380,
+            '2014': 380,
+            '2015': 380,
+            '2016': 380,
+            '2017': 380,
+            '2018': 380,
+            '2019': 380,
+            '2020': 380
+        },
+        'c': {
+            '2012': 195,
+            '2013': 220,
+            '2014': 194,
+            '2015': 194,
+            '2016': 194,
+            '2017': 194,
+            '2018': 194,
+            '2019': 194,
+            '2020': 206
+        },
+        'd': {
+            '2012': 190,
+            '2013': 190,
+            '2014': 200,
+            '2015': 190,
+            '2016': 266,
+            '2017': 266,
+            '2018': 266,
+            '2019': 266,
+            '2020': 518            
+        }
+    }
+
+    return range(1, game_lst[division][season]+1) if all_games else range(1, 6)
