@@ -2,7 +2,7 @@ import os
 import csv
 import zipfile
 import logging
-from utils import timestamp_decorator
+from .utils import timestamp_decorator
 
 #---------------------------------- Game exporter function
 @timestamp_decorator

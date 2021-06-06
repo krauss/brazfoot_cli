@@ -2,8 +2,8 @@ import click
 import logging
 import os
 from questionary import questionary, Choice
-from scrapper import scrapper
-from exporter import exporter
+from src.scrapper import scrapper
+from src.exporter import exporter
 
 #---------------------------------- Logger settings
 def set_logger():
@@ -18,7 +18,7 @@ bfgame_queue = []
 #---------------------------------- Options available
 lst_competition = [Choice('Campeonato Brasileiro', value='campeonato-brasileiro'), 
                     Choice('Copa do Brasil', value='copa-do-brasil')]
-lst_divison = [Choice('Serie A', value='a'), Choice('Serie B', value='b')]
+lst_divison = [Choice('Serie A', value='a'), Choice('Serie B', value='b'), Choice('Serie C', value='c'), Choice('Serie D', value='d')]
 lst_season = [str(year) for year in range(2012, 2021)]
 lst_file_format = [Choice('json'), Choice('xml'), Choice('csv')]
 

@@ -1,7 +1,7 @@
 import json
 import logging
 import xml.etree.ElementTree as ET
-from utils import parse_datetime
+from .utils import parse_datetime
 from bs4 import Tag
 
 #===========================================================================
