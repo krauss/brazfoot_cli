@@ -20,11 +20,11 @@ cd brazfoot_cli
 ```
 * Create a virtual environment:
 ```sh
-python -m venv ./venv
+python -m venv venv
 ```
 * Activate the virtual environment:
 ```sh
-./venv/bin/activate
+source venv/bin/activate
 ```
 * Install brazfoot_cli dependencies:
 ```sh
@@ -47,15 +47,19 @@ deactivate
 
 To quickly try this out, download our image and run it following the steps below:
 
+* Change directory:
+```sh
+cd brazfoot_cli
+```
 * Download the image from Docker Hub
 ```sh
-docker pull jrkrauss/brazfoot_cli:latest
+docker build -t brazfoot_cli .
 ```
-* [LINUX] Run the container specifying a volume for the resulting json file 
+* [ Linux ] Run the container specifying a volume for the resulting json file 
 ```sh
 docker run -it -v $PWD/export:/usr/src/app/export  jrkrauss/brazfoot_cli:latest
 ```
-* [WINDOWS] Run the container specifying a volume for the resulting json file
+* [ Windows ] Run the container specifying a volume for the resulting json file
 ```sh
 docker run -it -v %USERPROFILE%\export:/usr/src/app/export  jrkrauss/brazfoot_cli:latest 
 
