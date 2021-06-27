@@ -9,6 +9,7 @@
 ### Local setup
 
 **brazfoot_cli** requires [Python 3.9+](https://www.python.org/downloads/).
+
 Execute the commands below to setup the application according to your platform; Linux or Windows only.
 
 #### Linux  :penguin:
@@ -35,11 +36,11 @@ pip install -r requirements.txt
 ```
 * Run brazfoot_cli application:
 ```sh
-python src/main.py
+python run.py
 ```
 * to check the available command options:
 ```sh
-python src/main.py --help
+python run.py --help
 ```
 * To exit the virtual environment:
 ```sh
@@ -70,11 +71,11 @@ pip install -r requirements.txt
 ```
 * Run brazfoot_cli application:
 ```sh
-python src\main.py
+python run.py
 ```
 * to check the available command options:
 ```sh
-python src\main.py --help
+python run.py --help
 ```
 * To exit the virtual environment:
 ```sh
