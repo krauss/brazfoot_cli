@@ -31,9 +31,8 @@ def exporter(gameq, competition, division, season, file_format):
                     # Remove the previous json file
                     os.remove(os.path.join(os.getcwd(), 'export', f'{game}.json'))
 
-                except OSError as err:
-                    print(f'Error: permission error {os.strerror(err.errno)}, stack_trace: {err.with_traceback()}')
-                    logging.critical('Error: permission error', err)
+                except PermissionError:
+                    logging.exception('Permission error on saving JSON file.')
     
     elif file_format == 'xml':
         with zipfile.ZipFile(
@@ -58,9 +57,8 @@ def exporter(gameq, competition, division, season, file_format):
                     # Remove the previous json file
                     os.remove(os.path.join(os.getcwd(), 'export', f'{game}.xml'))
 
-                except OSError as err:
-                    print(f'Error: permission error {os.strerror(err.errno)}, stack_trace: {err.with_traceback()}')                
-                    logging.critical(f'Error: {os.strerror(err.errno)}, {err}')
+                except PermissionError:
+                    logging.exception('Permission error on saving XML file.' )
     else:            
         with open(
                 os.path.join(os.getcwd(), 'export', f'{file_name}.csv'), 
@@ -73,9 +71,8 @@ def exporter(gameq, competition, division, season, file_format):
                     if index == 0:
                         writer.writerow(game.get_game_csv()[0])
                     writer.writerow(game.get_game_csv()[1])
-            except PermissionError as err:
-                print(f'Error: permission error {os.strerror(err.errno)}, stack_trace: {err.with_traceback()}')
-                logging.critical(f'permission error: {os.strerror(err.errno)}, {err}')
+            except PermissionError:
+                logging.exception('Permission error on saving CSV file.')
 
     print(f' Games downloaded: {len(gameq)}')
     print(' Check out the .export/ directory.')
