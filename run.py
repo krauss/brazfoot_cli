@@ -1,20 +1,24 @@
 import click
 import logging
-import os
+from logging.handlers import RotatingFileHandler
+from pathlib import Path
 from questionary import questionary, Choice
 from src.scrapper import scrapper
 from src.exporter import exporter
 
 #---------------------------------- Logger settings
 def set_logger():
-    FORMAT = '%(name)s:%(levelname)s:%(asctime)s=%(message)s'
-    LOG_FILE = os.path.join(os.getcwd(), 'brazfoot_cli.log')
+    # Define configuracoes basicas para o logger
+    msg_frt = "[%(asctime)s.%(msecs)03d] %(levelname)s [%(name)s] - %(message)s"
+    time_frt = "%Y-%m-%d %H:%M:%S"
+    # Define o nome do arquivo de log baseado na env BOT_NAME
+    log_path = Path.joinpath(Path.cwd(), 'log', 'brazfoot_cli.log').as_posix()
+    formatter = logging.Formatter(msg_frt, time_frt)
+    handler = RotatingFileHandler(log_path, backupCount=0, maxBytes=102400)
     
-    logging.basicConfig(
-        filename=LOG_FILE, 
-        level=logging.WARNING, 
-        format=FORMAT
-    )
+    handler.setFormatter(formatter)
+    logging.getLogger().addHandler(handler)
+    logging.getLogger().setLevel('DEBUG')
 
 #---------------------------------- 
 bfgame_queue = []
@@ -34,7 +38,8 @@ lst_season = [str(year) for year in range(2012, 2021)]
 lst_file_format = [
     Choice('json'), 
     Choice('xml'), 
-    Choice('csv')
+    Choice('csv'),
+    Choice('database')
 ]
 
 #---------------------------------- Main method
