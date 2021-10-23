@@ -5,3 +5,4 @@ beautifulsoup4
 lxml
 requests_futures
 aiohttp
+pymongo
