@@ -2,11 +2,13 @@ import os
 import csv
 import zipfile
 import logging
-from .utils import timestamp_decorator
+from src.utils import timestamp_decorator
+from pymongo import MongoClient
+
 
 #---------------------------------- Game exporter function
 @timestamp_decorator
-def exporter(gameq, competition, division, season, file_format):
+def exporter(gameq: list, competition: str, division: str, season: str, file_format: str):
 
     file_name = f'{competition}-{season}' if competition == 'copa-do-brasil' else f'{competition}-{division}-{season}'
 
@@ -31,7 +33,7 @@ def exporter(gameq, competition, division, season, file_format):
                     # Remove the previous json file
                     os.remove(os.path.join(os.getcwd(), 'export', f'{game}.json'))
 
-                except PermissionError:
+                except:
                     logging.exception('Permission error on saving JSON file.')
     
     elif file_format == 'xml':
@@ -57,9 +59,10 @@ def exporter(gameq, competition, division, season, file_format):
                     # Remove the previous json file
                     os.remove(os.path.join(os.getcwd(), 'export', f'{game}.xml'))
 
-                except PermissionError:
+                except:
                     logging.exception('Permission error on saving XML file.' )
-    else:            
+
+    elif file_format == 'csv':            
         with open(
                 os.path.join(os.getcwd(), 'export', f'{file_name}.csv'), 
                 'w', 
@@ -71,8 +74,19 @@ def exporter(gameq, competition, division, season, file_format):
                     if index == 0:
                         writer.writerow(game.get_game_csv()[0])
                     writer.writerow(game.get_game_csv()[1])
-            except PermissionError:
+            except:
                 logging.exception('Permission error on saving CSV file.')
+    
+    else: # Database must be MongoDB
+        db_uri = 'mongodb://localhost:27017/'
+        with MongoClient(db_uri) as mongo_client:
+            db = mongo_client["football"]
+            collection = db[f"{competition}-{division}"]
+            try:                              
+                for game in gameq:
+                    collection.insert_one(game.get_game_dict())
+            except:
+                logging.exception('Error on saving data into database.')
 
     print(f' Games downloaded: {len(gameq)}')
     print(' Check out the .export/ directory.')
