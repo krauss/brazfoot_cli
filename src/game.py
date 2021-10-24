@@ -2,14 +2,14 @@ import json
 import logging
 import xml.etree.ElementTree as ET
 from .utils import parse_datetime
-from bs4 import Tag
+from bs4 import Tag, BeautifulSoup
 
 #===========================================================================
 #                        GameCampeonatoBrasileiro Class 
 #===========================================================================
 class GameCampeonatoBrasileiro:
 
-    def __init__(self, soup, date_mode):
+    def __init__(self, soup: BeautifulSoup, date_mode: str):
         self.competition_header = self.extract_competition_header(soup)
         self.game_header = self.extract_game_header(soup, date_mode)
         lineup = self.extract_lineup(soup)
@@ -17,7 +17,7 @@ class GameCampeonatoBrasileiro:
         self.game_referees = self.extract_game_referees(soup)
 
     #-------------------------------------------------------------------------
-    def extract_competition_header(self, soup):
+    def extract_competition_header(self, soup: BeautifulSoup) -> dict:
         '''Method gets a soup as argument and returns a dict with competition name and game number'''
         result = {}
 
@@ -45,7 +45,7 @@ class GameCampeonatoBrasileiro:
         return result
 
     #-------------------------------------------------------------------------
-    def extract_game_header(self, soup, date_mode):
+    def extract_game_header(self, soup: BeautifulSoup, date_mode: str) -> dict:
         '''Method gets a soup as argument and returns a dict with game date and place'''
         result = {}    
 
@@ -98,7 +98,7 @@ class GameCampeonatoBrasileiro:
         return result
 
     #-------------------------------------------------------------------------
-    def extract_lineup(self, soup):
+    def extract_lineup(self, soup: BeautifulSoup) -> dict:
         lineup = {}
 
         game_players = soup.find(id='escalacao')
@@ -144,39 +144,50 @@ class GameCampeonatoBrasileiro:
         return lineup
 
     #-------------------------------------------------------------------------
-    def extract_game_info(self, soup, lineup):
+    def extract_game_info(self, soup: BeautifulSoup, lineup: dict) -> dict:
         result = {}
         game_canceled = soup.find(class_='cancelado')
         game_score =  soup.find(class_='placar-wrapper')
         #--------- Home team info
-        game_home_team = game_score.find(class_='time-left')
-        game_home_team_name = game_home_team.find(class_='time-nome').text
+        home_team = game_score.find(class_='time-left')
+        home_team_name = home_team.find(class_='time-nome').text
         if not game_canceled:
-            game_home_team_goals = game_home_team.find(class_='time-gols').text      
+            home_team_goals = home_team.find(class_='time-gols').text
+            home_team_goals = int(home_team_goals)    
         #--------- Away team info
-        game_away_team = game_score.find(class_='time-right')
-        game_away_team_name = game_away_team.find(class_='time-nome').text
+        away_team = game_score.find(class_='time-right')
+        away_team_name = away_team.find(class_='time-nome').text
         if not game_canceled:
-            game_away_team_goals = game_away_team.find(class_='time-gols').text        
+            away_team_goals = away_team.find(class_='time-gols').text
+            away_team_goals = int(away_team_goals)
+        #--------- Check for penalty goals
+        home_team_penalty_goals = 0
+        away_team_penalty_goals = 0
+        penalti_score = game_score.find(class_="x center-block").find_all("strong")
+        if penalti_score:
+            home_team_penalty_goals = int(penalti_score[0].text)
+            away_team_penalty_goals = int(penalti_score[1].text)
 
         if not game_canceled:
-            if int(game_home_team_goals) > int(game_away_team_goals):
-                winner = game_home_team_name
-            elif int(game_away_team_goals) > int(game_home_team_goals):
-                winner = game_away_team_name
+            if (home_team_goals + home_team_penalty_goals) > (away_team_goals + away_team_penalty_goals):
+                winner = home_team_name
+            elif (away_team_goals + away_team_penalty_goals) > (home_team_goals + home_team_penalty_goals):
+                winner = away_team_name
             else:
                 winner = None
 
             result['winner'] = winner
             result['home'] = {
-                'name': game_home_team_name, 
-                'goals': int(game_home_team_goals),
+                'name': home_team_name, 
+                'goals': home_team_goals,
+                'penalties': home_team_penalty_goals if home_team_penalty_goals else None,
                 'lineup': lineup.get('1'), 
                 'substitutes': lineup.get('3')
             }
             result['away']= {
-                'name': game_away_team_name, 
-                'goals': int(game_away_team_goals),
+                'name': away_team_name, 
+                'goals': away_team_goals,
+                'penalties': away_team_penalty_goals if away_team_penalty_goals else None,
                 'lineup': lineup.get('2'), 
                 'substitutes': lineup.get('4')
             }
@@ -185,16 +196,16 @@ class GameCampeonatoBrasileiro:
             logging.critical('Game %s has been canceled.', self.competition_header["game"])
             result['winner'] = 'Canceled'
             result['home'] = {
-                'name': game_home_team_name
+                'name': home_team_name
             }
             result['away']= {
-                'name': game_away_team_name
+                'name': away_team_name
             }
 
         return result
 
     #-------------------------------------------------------------------------
-    def extract_game_referees(self, soup):
+    def extract_game_referees(self, soup: BeautifulSoup) -> dict:
         '''Extract and returns a list of Referees'''
         referees = []
         game_referees = soup.find(id='arbitros').find(class_='table').find('tbody').findAll('tr')
@@ -206,7 +217,7 @@ class GameCampeonatoBrasileiro:
         return {'referees': referees}
 
     #-------------------------------------------------------------------------
-    def get_game_dict(self):
+    def get_game_dict(self) -> dict:
         '''Return this Game object as a dictionary. Suitable to use with document-based No-SQL databases like MongoDB'''
         return self.competition_header | self.game_header | self.game_score | self.game_referees
 
@@ -218,7 +229,7 @@ class GameCampeonatoBrasileiro:
         return json.dumps(game, ensure_ascii=False, indent=4)
 
     #-------------------------------------------------------------------------
-    def get_game_xml(self):
+    def get_game_xml(self) -> ET.ElementTree:
         '''Return this Game object as a XML'''
         game = ET.Element('game')
         competition = ET.SubElement(game, 'competition')
@@ -357,7 +368,7 @@ class GameCampeonatoBrasileiro:
         return [hdr.upper() for hdr in header], game.values()
     
     #-------------------------------------------------------------------------
-    def __str__(self):
+    def __str__(self) -> str:
         return f"game_{self.competition_header['game']}"
 
     #-------------------------------------------------------------------------
@@ -370,7 +381,7 @@ class GameCampeonatoBrasileiro:
 #===========================================================================
 class GameCopaDoBrasil:
 
-    def __init__(self, soup, date_mode):
+    def __init__(self, soup: BeautifulSoup, date_mode: str):
         self.competition_header = self.extract_competition_header(soup)
         self.game_header = self.extract_game_header(soup, date_mode)
         lineup = self.extract_lineup(soup)
@@ -378,7 +389,7 @@ class GameCopaDoBrasil:
         self.game_referees = self.extract_game_referees(soup)
 
     #-------------------------------------------------------------------------
-    def extract_competition_header(self, soup):
+    def extract_competition_header(self, soup: BeautifulSoup) -> dict:
         '''Method gets a soup as argument and returns a dict with competitio name and game number'''
         result = {}
 
@@ -397,7 +408,7 @@ class GameCopaDoBrasil:
         return result
 
     #-------------------------------------------------------------------------
-    def extract_game_header(self, soup, date_mode):
+    def extract_game_header(self, soup: BeautifulSoup, date_mode: str) -> dict:
         '''Method gets a soup as argument and returns a dict with game date and place'''
         result = {}    
 
@@ -428,7 +439,7 @@ class GameCopaDoBrasil:
         return result
 
     #-------------------------------------------------------------------------
-    def extract_lineup(self, soup):
+    def extract_lineup(self, soup: BeautifulSoup) -> dict:
         lineup = {}
 
         game_players = soup.find(id='escalacao')
@@ -472,27 +483,36 @@ class GameCopaDoBrasil:
         return lineup
 
     #-------------------------------------------------------------------------
-    def extract_game_info(self, soup, lineup):
+    def extract_game_info(self, soup: BeautifulSoup, lineup: dict) -> dict:
         result = {}
         game_canceled = soup.find(class_='cancelado')
         game_score =  soup.find(class_='placar-wrapper')
         #--------- Home team info
-        game_home_team = game_score.find(class_='time-left')
-        game_home_team_name = game_home_team.find(class_='time-nome').text
+        home_team = game_score.find(class_='time-left')
+        home_team_name = home_team.find(class_='time-nome').text
         if not game_canceled:
-            game_home_team_goals = game_home_team.find(class_='time-gols').text      
+            home_team_goals = home_team.find(class_='time-gols').text
+            home_team_goals = int(home_team_goals)
         #--------- Away team info
-        game_away_team = game_score.find(class_='time-right')
-        game_away_team_name = game_away_team.find(class_='time-nome').text
+        away_team = game_score.find(class_='time-right')
+        away_team_name = away_team.find(class_='time-nome').text
         if not game_canceled:
-            game_away_team_goals = game_away_team.find(class_='time-gols').text        
+            away_team_goals = away_team.find(class_='time-gols').text
+            away_team_goals = int(away_team_goals)
+        #--------- Check for penalty goals
+        home_team_penalty_goals = 0
+        away_team_penalty_goals = 0
+        penalti_score = game_score.find(class_="x center-block").find_all("strong")
+        if penalti_score:
+            home_team_penalty_goals = int(penalti_score[0].text)
+            away_team_penalty_goals = int(penalti_score[1].text)
 
         if not game_canceled:            
             try:
-                if int(game_home_team_goals) > int(game_away_team_goals):
-                    winner = game_home_team_name
-                elif int(game_away_team_goals) > int(game_home_team_goals):
-                    winner = game_away_team_name
+                if (home_team_goals + home_team_penalty_goals) > (away_team_goals + away_team_penalty_goals):
+                    winner = home_team_name
+                elif (away_team_goals + away_team_penalty_goals) > (home_team_goals + home_team_penalty_goals):
+                    winner = away_team_name
                 else:
                     winner = None
             except ValueError:
@@ -500,14 +520,16 @@ class GameCopaDoBrasil:
 
             result['winner'] = winner
             result['home'] = {
-                'name': game_home_team_name, 
-                'goals': int(game_home_team_goals) if game_home_team_goals else None,
+                'name': home_team_name, 
+                'goals': home_team_goals if home_team_goals else None,
+                'penalties': home_team_penalty_goals if home_team_penalty_goals else None,
                 'lineup': lineup.get('1'), 
                 'substitutes': lineup.get('3')
             }
             result['away']= {
-                'name': game_away_team_name, 
-                'goals': int(game_away_team_goals) if game_away_team_goals else None,
+                'name': away_team_name, 
+                'goals': away_team_goals if away_team_goals else None,
+                'penalties': away_team_penalty_goals if away_team_penalty_goals else None,
                 'lineup': lineup.get('2'), 
                 'substitutes': lineup.get('4')
             }
@@ -515,16 +537,16 @@ class GameCopaDoBrasil:
         else:
             result['winner'] = 'Canceled'
             result['home'] = {
-                'name': game_home_team_name
+                'name': home_team_name
             }
             result['away']= {
-                'name': game_away_team_name
+                'name': away_team_name
             }
 
         return result
 
     #-------------------------------------------------------------------------
-    def extract_game_referees(self, soup):
+    def extract_game_referees(self, soup: BeautifulSoup) -> dict:
         '''Extract and returns a list of Referees'''
         referees = []
         game_referees = soup.find(id='arbitros').find(class_='table').find('tbody').findAll('tr')
@@ -536,7 +558,7 @@ class GameCopaDoBrasil:
         return {'referees': referees}
 
     #-------------------------------------------------------------------------
-    def get_game_dict(self):
+    def get_game_dict(self) -> dict:
         '''Return this Game object as a dictionary. Suitable to use with document-based No-SQL databases like MongoDB'''
         return self.competition_header | self.game_header | self.game_score | self.game_referees
 
@@ -548,7 +570,7 @@ class GameCopaDoBrasil:
         return json.dumps(game, ensure_ascii=False, indent=4)
 
     #-------------------------------------------------------------------------
-    def get_game_xml(self):
+    def get_game_xml(self) -> ET.ElementTree:
         '''Return this Game object as a XML'''
         game = ET.Element('game')
         competition = ET.SubElement(game, 'competition')
