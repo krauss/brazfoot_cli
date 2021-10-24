@@ -18,7 +18,8 @@ def set_logger():
     
     handler.setFormatter(formatter)
     logging.getLogger().addHandler(handler)
-    logging.getLogger().setLevel('DEBUG')
+    logging.getLogger().setLevel('INFO')
+    logging.getLogger().name = 'brazfoot_cli'
 
 #---------------------------------- 
 bfgame_queue = []
@@ -34,7 +35,7 @@ lst_divison = [
     Choice('Serie C', value='c'), 
     Choice('Serie D', value='d')
 ]
-lst_season = [str(year) for year in range(2012, 2021)]
+lst_season = [str(year) for year in range(2012, 2022)]
 lst_file_format = [
     Choice('json'), 
     Choice('xml'), 
@@ -44,33 +45,6 @@ lst_file_format = [
 
 #---------------------------------- Main method
 @click.command()
-@click.option(
-    '-c', 
-    '--competition', 
-    type=click.Choice(['campeonato-brasileiro', 'copa-do-brasil'], 
-    case_sensitive=False)
-)
-@click.option(
-    '-d', 
-    '--division', 
-    type=click.Choice(['a', 'b'], case_sensitive=False)
-)
-@click.option(
-    '-s', 
-    '--season', 
-    type=click.IntRange(2012, 2020, clamp=True), 
-    help='What season, starting from 2012...2020'
-)
-@click.option(
-    '-f', 
-    '--file-format', 
-    type=click.Choice(['json', 'xml', 'csv'], case_sensitive=False)
-)
-@click.option(
-    '--sample', 
-    is_flag=True, 
-    help="Extracts only the first 10 game matches"
-)
 def main(competition=None, division=None, season=None, file_format=None, sample=False):
     """Brazillian Football Web Scrapper - CLI"""
     print("+", "-" * 40, "+")
