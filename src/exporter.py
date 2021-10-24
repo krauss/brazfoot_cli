@@ -81,7 +81,9 @@ def exporter(gameq: list, competition: str, division: str, season: str, file_for
         db_uri = 'mongodb://localhost:27017/'
         with MongoClient(db_uri) as mongo_client:
             db = mongo_client["football"]
-            collection = db[f"{competition}-{division}"]
+            collection_name_1 = f"{competition.replace('-', '_')}_{division}"
+            collection_name_2 = f"{competition.replace('-', '_')}"
+            collection = db[collection_name_1] if competition.startswith('campeonato') else db[collection_name_2]
             try:                              
                 for game in gameq:
                     collection.insert_one(game.get_game_dict())
