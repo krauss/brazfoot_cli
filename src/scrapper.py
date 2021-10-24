@@ -1,6 +1,6 @@
 import logging
-from .game import GameCampeonatoBrasileiro, GameCopaDoBrasil
-from .utils import timestamp_decorator, HEADERS, get_copa_do_brasil_games, get_campeonato_brasileiro_games
+from src.game import GameCampeonatoBrasileiro, GameCopaDoBrasil
+from src.utils import timestamp_decorator, HEADERS, get_copa_do_brasil_games, get_campeonato_brasileiro_games
 from bs4 import BeautifulSoup
 from concurrent.futures import as_completed
 from requests_futures.sessions import FuturesSession
@@ -18,23 +18,28 @@ def scrapper(gameq, competition, division, season, is_all_games):
 
         with FuturesSession(max_workers=wrks) as session:
             try:
-
-                futures = [session.get(f'https://www.cbf.com.br/futebol-brasileiro/competicoes/campeonato-brasileiro-serie-{division}/{season}/{game}', headers=HEADERS) for game in game_lst]
+                url = 'https://www.cbf.com.br/futebol-brasileiro/competicoes/campeonato-brasileiro-serie-{0}/{1}/{2}'
+                futures = [session.get(url.format(division, season, game), headers=HEADERS) for game in game_lst]
             
-            except ConnectionError as conerr:
-                logging.critical('Connection error: %s', conerr)
-            except TimeoutError as timerr:
-                logging.critical('Timeout error: %s', timerr)
-            except Exception as ex:
-                logging.critical('Error: %s', ex)
+            except ConnectionError:
+                logging.exception('Connection error!')
+            except TimeoutError:
+                logging.exception('Timeout error!')
+            except Exception:
+                logging.exception('Error!')
 
             else:
                 for index, req in enumerate(as_completed(futures)):
                     print(f' Status: {(index / len(game_lst)):.1%}', end='\r')
                     if req.result().status_code == 200:
-                        game_soup = BeautifulSoup(bytes(req.result().content), features="lxml")
-                        bfgame = GameCampeonatoBrasileiro(game_soup, 'str')
-                        gameq.append(bfgame)
+                        try:
+                            game_soup = BeautifulSoup(bytes(req.result().content), features="html.parser")
+                            bfgame = GameCampeonatoBrasileiro(game_soup, 'str')
+                            gameq.append(bfgame)
+                        except:
+                            logging.exception(f"Error. Game: {bfgame.competition_header.get('game')}")
+                    else:
+                        logging.exception('Erro! Page not found.')
 
     else:
 
@@ -43,20 +48,25 @@ def scrapper(gameq, competition, division, season, is_all_games):
         
         with FuturesSession(max_workers=wrks) as session:
             try:
-
-                futures = [session.get(f'https://www.cbf.com.br/futebol-brasileiro/competicoes/copa-brasil-masculino/{season}/{game}', headers=HEADERS) for game in game_lst]
+                url = 'https://www.cbf.com.br/futebol-brasileiro/competicoes/copa-brasil-masculino/{0}/{1}'
+                futures = [session.get(url.format(season, game), headers=HEADERS) for game in game_lst]
             
-            except ConnectionError as conerr:
-                logging.critical('Connection error: %s', conerr)
-            except TimeoutError as timerr:
-                logging.critical('Timeout error: %s', timerr)
-            except Exception as ex:
-                logging.critical('Error: %s', ex)
+            except ConnectionError:
+                logging.exception('Connection error!')
+            except TimeoutError:
+                logging.exception('Timeout error!')
+            except Exception:
+                logging.exception('Error!')
 
             else:
                 for index, req in enumerate(as_completed(futures)):
                     print(f' Status: {(index / len(game_lst)):.1%}', end='\r')
                     if req.result().status_code == 200:
-                        game_soup = BeautifulSoup(bytes(req.result().content), features="lxml")
-                        bfgame = GameCopaDoBrasil(game_soup, 'str')
-                        gameq.append(bfgame)
+                        try:
+                            game_soup = BeautifulSoup(bytes(req.result().content), features="html.parser")
+                            bfgame = GameCopaDoBrasil(game_soup, 'str')
+                            gameq.append(bfgame)
+                        except:
+                            logging.exception(f"Error. Game: {bfgame.competition_header.get('game')}")
+                    else:
+                        logging.exception('Erro! Page not found.')
