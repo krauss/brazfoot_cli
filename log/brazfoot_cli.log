@@ -1,0 +1,33 @@
+[2021-11-28 21:09:31.232] INFO [brazfoot_cli] - Start of scrapping.
+[2021-11-28 21:09:31.233] INFO [brazfoot_cli] - Scrapping set to campeonato-brasileiro, d, 2021.
+[2021-11-28 21:11:17.518] INFO [brazfoot_cli] - Start of scrapping.
+[2021-11-28 21:11:17.518] INFO [brazfoot_cli] - Scrapping set to campeonato-brasileiro, d, 2021.
+[2021-11-28 21:11:18.373] WARNING [brazfoot_cli] - Game 6 has no channel information. Setting it to None.
+[2021-11-28 21:11:18.541] WARNING [brazfoot_cli] - Game 7 has no channel information. Setting it to None.
+[2021-11-28 21:11:18.596] WARNING [brazfoot_cli] - Game 3 has no channel information. Setting it to None.
+[2021-11-28 21:11:19.210] WARNING [brazfoot_cli] - Game 8 has no channel information. Setting it to None.
+[2021-11-28 21:11:19.443] WARNING [brazfoot_cli] - Game 4 has no channel information. Setting it to None.
+[2021-11-28 21:11:19.545] WARNING [brazfoot_cli] - Game 1 has no channel information. Setting it to None.
+[2021-11-28 21:11:20.226] WARNING [brazfoot_cli] - Game 5 has no channel information. Setting it to None.
+[2021-11-28 21:11:20.535] WARNING [brazfoot_cli] - Game 2 has no channel information. Setting it to None.
+[2021-11-28 21:12:07.951] INFO [brazfoot_cli] - End of scrapping.
+[2021-11-28 21:12:07.951] INFO [brazfoot_cli] - Start of exporting.
+[2021-11-28 21:12:08.324] INFO [brazfoot_cli] - End of exporting.
+[2021-11-28 21:12:39.392] INFO [brazfoot_cli] - Start of scrapping.
+[2021-11-28 21:12:39.392] INFO [brazfoot_cli] - Scrapping set to campeonato-brasileiro, c, 2021.
+[2021-11-28 21:12:40.049] WARNING [brazfoot_cli] - Game 2 has no channel information. Setting it to None.
+[2021-11-28 21:12:40.336] WARNING [brazfoot_cli] - Game 12 has no channel information. Setting it to None.
+[2021-11-28 21:12:40.410] WARNING [brazfoot_cli] - Game 13 has no channel information. Setting it to None.
+[2021-11-28 21:12:40.756] WARNING [brazfoot_cli] - Game 15 has no channel information. Setting it to None.
+[2021-11-28 21:12:41.912] WARNING [brazfoot_cli] - Game 18 has no channel information. Setting it to None.
+[2021-11-28 21:12:41.968] WARNING [brazfoot_cli] - Game 32 has no channel information. Setting it to None.
+[2021-11-28 21:12:42.041] WARNING [brazfoot_cli] - Game 33 has no channel information. Setting it to None.
+[2021-11-28 21:12:56.016] INFO [brazfoot_cli] - End of scrapping.
+[2021-11-28 21:12:56.016] INFO [brazfoot_cli] - Start of exporting.
+[2021-11-28 21:12:56.173] INFO [brazfoot_cli] - End of exporting.
+[2021-11-28 21:13:07.163] INFO [brazfoot_cli] - Start of scrapping.
+[2021-11-28 21:13:07.164] INFO [brazfoot_cli] - Scrapping set to campeonato-brasileiro, b, 2021.
+[2021-11-28 21:13:37.433] CRITICAL [brazfoot_cli] - Team has no lineup definition. Setting to None. 'NoneType' object has no attribute 'findAll'
+[2021-11-28 21:13:39.706] INFO [brazfoot_cli] - End of scrapping.
+[2021-11-28 21:13:39.706] INFO [brazfoot_cli] - Start of exporting.
+[2021-11-28 21:13:39.986] INFO [brazfoot_cli] - End of exporting.

@@ -88,7 +88,8 @@ def get_campeonato_brasileiro_games(division, season, all_games):
             '2017': 380,
             '2018': 380,
             '2019': 380,
-            '2020': 380
+            '2020': 380,
+            '2021': 380
         },
         'b': {
             '2012': 380,
@@ -99,7 +100,8 @@ def get_campeonato_brasileiro_games(division, season, all_games):
             '2017': 380,
             '2018': 380,
             '2019': 380,
-            '2020': 380
+            '2020': 380,
+            '2021': 380
         },
         'c': {
             '2012': 195,
@@ -110,7 +112,8 @@ def get_campeonato_brasileiro_games(division, season, all_games):
             '2017': 194,
             '2018': 194,
             '2019': 194,
-            '2020': 206
+            '2020': 206,
+            '2021': 206
         },
         'd': {
             '2012': 190,
@@ -121,7 +124,8 @@ def get_campeonato_brasileiro_games(division, season, all_games):
             '2017': 266,
             '2018': 266,
             '2019': 266,
-            '2020': 518            
+            '2020': 518,
+            '2021': 518       
         }
     }
 
